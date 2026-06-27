@@ -130,6 +130,9 @@ async function connectWhatsApp() {
           body,
           timestamp : new Date().toISOString(),
         }, { timeout: 10000 }).catch(err => console.error("Forward error:", err.message));
+        maxRedirects : 0,          // ← tambahkan ini
+  validateStatus: (s) => s < 400 || s === 302,
+})
       }
     }
   });
