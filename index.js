@@ -271,8 +271,8 @@ app.get("/admin", requireSecret, (_req, res) => {
         <p class="status">QR Available: <b>${!!latestQR ? 'Ya' : 'Tidak'}</b></p>
       </div>
       <div class="card">
-        <a href="/qr?secret=Bismillahstudev456" class="btn btn-green">📷 Scan QR</a>
-        <a href="/status?secret=Bismillahstudev456" class="btn btn-blue">📊 Status</a>
+        <a href="/qr?secret=bismillah123" class="btn btn-green">📷 Scan QR</a>
+        <a href="/status?secret=bismillah123" class="btn btn-blue">📊 Status</a>
         <button class="btn btn-red" onclick="logout()">🚪 Logout WA</button>
       </div>
       <div class="card">
@@ -288,7 +288,7 @@ app.get("/admin", requireSecret, (_req, res) => {
           if (!confirm('Yakin mau logout WhatsApp?')) return;
           fetch('/logout', {
             method: 'POST',
-            headers: { 'x-api-secret': 'Bismillahstudev456' }
+            headers: { 'x-api-secret': 'bismillah123' }
           }).then(r => r.json()).then(d => {
             alert(d.message || 'Logged out!');
             location.reload();
