@@ -122,20 +122,17 @@ async function connectWhatsApp() {
 
       if (!body) continue;
       console.log(`📩 Pesan masuk dari ${from}`);
-
       if (CONFIG.APPS_SCRIPT_URL) {
         await axios.post(CONFIG.APPS_SCRIPT_URL, {
           type      : "incoming_message",
           from,
           body,
           timestamp : new Date().toISOString(),
-        }, { timeout: 10000 }).catch(err => console.error("Forward error:", err.message));
-        maxRedirects : 0,          // ← tambahkan ini
-  validateStatus: (s) => s < 400 || s === 302,
-})
-      }
-    }
-  });
+  }, { 
+    timeout        : 10000,
+    maxRedirects   : 0,
+    validateStatus : (s) => s < 400 || s === 302,
+  }).catch(err => console.error("Forward error:", err.message));
 }
 
 // ════════════════════════════════════════════════════════════
