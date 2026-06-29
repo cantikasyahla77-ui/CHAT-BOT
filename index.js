@@ -1,3 +1,19 @@
+/**
+ * ============================================================
+ *  VOICETA WhatsApp Bot Server
+ *  Engine : Baileys (WebSocket — tanpa Puppeteer/Chromium)
+ *  Hosting : Railway / Render (free tier)
+ * ============================================================
+ *
+ *  ENDPOINT:
+ *    GET  /qr          → buka di browser untuk scan QR ← BARU
+ *    POST /send        → kirim pesan WA
+ *    POST /send-batch  → kirim pesan ke banyak nomor sekaligus
+ *    GET  /health      → cek status koneksi
+ *    GET  /status      → info lengkap server
+ * ============================================================
+ */
+
 "use strict";
 
 const {
@@ -18,7 +34,7 @@ const QRCode  = require("qrcode");          // ← tambahan baru
 const CONFIG = {
   PORT            : process.env.PORT             || 3000,
   APPS_SCRIPT_URL : process.env.APPS_SCRIPT_URL  || "",
-  API_SECRET      : process.env.API_SECRET       || "bismillah123",
+  API_SECRET      : process.env.API_SECRET       || "rahasia123",
   AUTH_DIR        : "./auth_info",
   RECONNECT_DELAY : 5000,
 };
@@ -26,7 +42,7 @@ const CONFIG = {
 // ── State global ─────────────────────────────────────────────
 let sock           = null;
 let isConnected    = false;
-let latestQR       = null;              
+let latestQR       = null;              // ← simpan string QR terbaru
 let reconnectTimer = null;
 
 const logger = pino({ level: "warn" });
@@ -61,7 +77,7 @@ async function connectWhatsApp() {
       creds : state.creds,
       keys  : makeCacheableSignalKeyStore(state.keys, logger),
     },
-    printQRInTerminal          : false,   
+    printQRInTerminal          : false,   // matikan log terminal, pakai /qr endpoint
     generateHighQualityLinkPreview: false,
     browser: ["VOICETA-Bot", "Chrome", "1.0.0"],
   });
@@ -70,13 +86,13 @@ async function connectWhatsApp() {
 
   sock.ev.on("connection.update", ({ connection, lastDisconnect, qr }) => {
     if (qr) {
-      latestQR = qr;                      
+      latestQR = qr;                      // ← simpan QR string
       console.log("⬜ QR baru tersedia — buka /qr di browser untuk scan.");
     }
 
     if (connection === "open") {
       isConnected = true;
-      latestQR    = null;                 
+      latestQR    = null;                 // hapus QR setelah connected
       console.log("✅ WhatsApp terhubung!");
     }
 
@@ -106,17 +122,17 @@ async function connectWhatsApp() {
 
       if (!body) continue;
       console.log(`📩 Pesan masuk dari ${from}`);
+
       if (CONFIG.APPS_SCRIPT_URL) {
         await axios.post(CONFIG.APPS_SCRIPT_URL, {
           type      : "incoming_message",
           from,
           body,
           timestamp : new Date().toISOString(),
-  }, { 
-    timeout        : 10000,
-    maxRedirects   : 0,
-    validateStatus : (s) => s < 400 || s === 302,
-  }).catch(err => console.error("Forward error:", err.message));
+        }, { timeout: 10000 }).catch(err => console.error("Forward error:", err.message));
+      }
+    }
+  });
 }
 
 // ════════════════════════════════════════════════════════════
@@ -255,8 +271,8 @@ app.get("/admin", requireSecret, (_req, res) => {
         <p class="status">QR Available: <b>${!!latestQR ? 'Ya' : 'Tidak'}</b></p>
       </div>
       <div class="card">
-        <a href="/qr?secret=bismillah123" class="btn btn-green">📷 Scan QR</a>
-        <a href="/status?secret=bismillah123" class="btn btn-blue">📊 Status</a>
+        <a href="/qr?secret=Bismillahstudev456" class="btn btn-green">📷 Scan QR</a>
+        <a href="/status?secret=Bismillahstudev456" class="btn btn-blue">📊 Status</a>
         <button class="btn btn-red" onclick="logout()">🚪 Logout WA</button>
       </div>
       <div class="card">
@@ -272,7 +288,7 @@ app.get("/admin", requireSecret, (_req, res) => {
           if (!confirm('Yakin mau logout WhatsApp?')) return;
           fetch('/logout', {
             method: 'POST',
-            headers: { 'x-api-secret': 'bismillah123' }
+            headers: { 'x-api-secret': 'Bismillahstudev456' }
           }).then(r => r.json()).then(d => {
             alert(d.message || 'Logged out!');
             location.reload();
