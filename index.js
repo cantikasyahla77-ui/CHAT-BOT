@@ -34,7 +34,7 @@ const QRCode  = require("qrcode");          // ← tambahan baru
 const CONFIG = {
   PORT            : process.env.PORT             || 3000,
   APPS_SCRIPT_URL : process.env.APPS_SCRIPT_URL  || "",
-  API_SECRET      : process.env.API_SECRET       || "rahasia123",
+  API_SECRET      : process.env.API_SECRET       || "bismillah123",
   AUTH_DIR        : "./auth_info",
   RECONNECT_DELAY : 5000,
 };
